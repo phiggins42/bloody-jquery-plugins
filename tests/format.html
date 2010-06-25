@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        
+        <title>Number Format Tests</title>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+        <script src="../format.js"></script>
+        <script>
+        
+            $(function(){
+                
+                $("#foo, #bar").format();
+
+                var o = $("#baz");
+
+                var x = "1234567";
+                var xx = $.formatNumber(x);
+                
+                var y = "1,234,567";
+                var yy = $.parseNumber(y);
+                
+                o.append("<li>" + xx + "</li>").append("<li>" + yy + "</li>");
+            });
+        
+        </script>
+        
+    </head>
+    <body>
+        
+        <input id="foo" value="1234567">
+        
+        <div id="bar">1234567</div>
+        
+        <ul id="baz">
+            <li>outputs:</li>
+        </ul>
+        
+    </body>
+</html>
