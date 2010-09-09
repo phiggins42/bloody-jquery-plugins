@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        
+        <title>Number Format Tests</title>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+        <script src="../Stateful.js"></script>
+        <script>
+        
+            $(function(){
+
+                var thing = new $.Stateful();
+                thing.watch("bar", function(){
+                    console.log("bar changed to", this.get("bar"));
+                });
+                thing.set("bar", "baz");
+
+            });
+        
+        </script>
+        
+    </head>
+    <body>
+    </body>
+</html>
