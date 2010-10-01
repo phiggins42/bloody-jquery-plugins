@@ -29,7 +29,11 @@
 		//
 		//	|		$.publish("/some/topic", ["a","b","c"]);
 		cache[topic] && d.each(cache[topic], function(){
-			this.apply(d, args || []);
+			try {
+				this.apply($, args || []);
+			} catch (e) {
+				if (console) console.warn(e);
+			}
 		});
 	};
 
@@ -67,7 +71,7 @@
 		
 		var t = handle[0];
 		cache[t] && d.each(cache[t], function(idx){
-			if(this == handle[1]){
+			if(this === handle[1]){
 				cache[t].splice(idx, 1);
 			}
 		});
