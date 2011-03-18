@@ -28,12 +28,12 @@
 		//		with a function signature like: function(a,b,c){ ... }
 		//
 		//	|		$.publish("/some/topic", ["a","b","c"]);
-		var notified = 0;
+		var subscribers = 0;
 		cache[topic] && d.each(cache[topic], function(){
 			this.apply(d, args || []);
-			notified = notified + 1;
+			subscribers = subscribers + 1;
 		});
-		return notified;
+		return subscribers;
 	};
 
 	d.subscribe = function(/* String */topic, /* Function */callback){
