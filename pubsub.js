@@ -31,7 +31,7 @@
 		var subscribers = 0;
 		cache[topic] && d.each(cache[topic], function(){
 			this.apply(d, args || []);
-			subscribers = subscribers + 1;
+			subscribers += 1;
 		});
 		return subscribers;
 	};
