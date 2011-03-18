@@ -15,6 +15,9 @@
 	var cache = {},
 		options = {};
 
+	d.pubsubOptions = function(/* String */optionName, /* object */optionValue) {
+		options[optionName] = optionValue;
+	}
 
 	d.publish = function(/* String */topic, /* Array? */args, /* bool */mustHaveSubscribers){
 		// summary: 
