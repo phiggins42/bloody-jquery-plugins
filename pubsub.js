@@ -40,7 +40,7 @@
 			subscribers += 1;
 		});
 
-		if (subscribers === 0 && (mustHaveSubscribers || options.mustHaveSubscribers)) {
+		if (subscribers === 0 && (mustHaveSubscribers || options.mustHaveSubscribers || (typeof options.onNoSubscribers === "function"))) {
 			if (typeof options.onNoSubscribers === "function") {
 				options.onNoSubscribers(topic);
 			} else {
