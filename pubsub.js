@@ -28,9 +28,11 @@
 		//		with a function signature like: function(a,b,c){ ... }
 		//
 		//	|		$.publish("/some/topic", ["a","b","c"]);
-		cache[topic] && d.each(cache[topic], function(){
-			this.apply(d, args || []);
-		});
+		if(cache[topic]){
+			for(var i = 0; i < cache[topic].length; i++){
+				cache[topic][i].apply(d, args || []);
+			}
+		}
 	};
 
 	d.subscribe = function(/* String */topic, /* Function */callback){
