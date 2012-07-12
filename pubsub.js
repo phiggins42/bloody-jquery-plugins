@@ -28,12 +28,24 @@
 		//		with a function signature like: function(a,b,c){ ... }
 		//
 		//	|		$.publish("/some/topic", ["a","b","c"]);
-		cache[topic] && d.each(cache[topic], function(){
-			this.apply(d, args || []);
+		
+		if ((typeof(cache[topic]) == 'undefined') || (typeof(topic) == 'undefined'))
+			return this; //for chaining 
+		
+		if ((typeof(args) == 'undefined') || (args == null) || (args == false))
+			args = [];
+		
+		if (typeof(args) == 'string')
+			args = [ args ];
+		
+		
+		cache[topic] && d.each(cache[topic], function(i,v){
+			if ($.isFunction(v))
+				this.apply(d, args || []);
 		});
 	};
 
-	d.subscribe = function(/* String */topic, /* Function */callback){
+	d.subscribe = function(/* String */topic, /* Function */callback, /* Priority */priority){
 		// summary:
 		//		Register a callback on a named topic.
 		// topic: String
@@ -52,8 +64,18 @@
 		if(!cache[topic]){
 			cache[topic] = [];
 		}
-		cache[topic].push(callback);
-		return [topic, callback]; // Array
+		
+		if ((typeof(priority) == 'undefined') || (priority == 0) || (priority == false))
+			priority = false;
+		else
+			priority = true;
+		
+		if (priority == false)
+			cache[topic].push(callback);
+		else
+			cache[topic].unshift(callback);
+		
+		return this;
 	};
 
 	d.unsubscribe = function(/* Array */handle){
