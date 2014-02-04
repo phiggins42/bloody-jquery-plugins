@@ -12,9 +12,14 @@
 ;(function(d){
 
 	// the topic/subscription hash
-	var cache = {};
+	var cache = {},
+		options = {};
 
-	d.publish = function(/* String */topic, /* Array? */args){
+	d.pubsubOptions = function(/* String */optionName, /* object */optionValue) {
+		options[optionName] = optionValue;
+	}
+
+	d.publish = function(/* String */topic, /* Array? */args, /* bool */mustHaveSubscribers){
 		// summary: 
 		//		Publish some data on a named topic.
 		// topic: String
@@ -28,9 +33,27 @@
 		//		with a function signature like: function(a,b,c){ ... }
 		//
 		//	|		$.publish("/some/topic", ["a","b","c"]);
+		var subscribers = 0,
+			errorMessage;
 		cache[topic] && d.each(cache[topic], function(){
 			this.apply(d, args || []);
+			subscribers += 1;
 		});
+
+		if (subscribers === 0 && (mustHaveSubscribers || options.mustHaveSubscribers || (typeof options.onNoSubscribers === "function"))) {
+			if (typeof options.onNoSubscribers === "function") {
+				options.onNoSubscribers(topic);
+			} else {
+				errorMessage = 'The topic "'+ topic +'" was published when there were no subscribers to the topic.';
+				if (typeof console  !== "undefined") {
+					console.error(errorMessage);
+				} else {
+					alert(errorMessage);
+				}
+			}
+		}
+
+		return subscribers;
 	};
 
 	d.subscribe = function(/* String */topic, /* Function */callback){
