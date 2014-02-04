@@ -1,77 +1,79 @@
-/*	
+/**
+	 *	Events. Pub/Sub system for Loosely Coupled logic.
+	 *	Based on Peter Higgins' port from Dojo to jQuery
+	 *	https://github.com/phiggins42/bloody-jquery-plugins/blob/master/pubsub.js
+	 *
+	 *	Re-adapted to vanilla Javascript
+	 *
+	 *	@class Events
+	 */
+	var Events = (function (){
+		var cache = {},
+			/**
+			 *	Events.publish
+			 *	e.g.: Events.publish("/Article/added", [article], this);
+			 *
+			 *	@class Events
+			 *	@method publish
+			 *	@param topic {String}
+			 *	@param args	{Array}
+			 *	@param scope {Object} Optional
+			 */
+			publish = function (topic, args, scope) {
+				if (cache[topic]) {
+					var thisTopic = cache[topic],
+						i = thisTopic.length - 1;
 
-	jQuery pub/sub plugin by Peter Higgins (dante@dojotoolkit.org)
+					for (i; i >= 0; i -= 1) {
+						thisTopic[i].apply( scope || this, args || []);
+					}
+				}
+			},
+			/**
+			 *	Events.subscribe
+			 *	e.g.: Events.subscribe("/Article/added", Articles.validate)
+			 *
+			 *	@class Events
+			 *	@method subscribe
+			 *	@param topic {String}
+			 *	@param callback {Function}
+			 *	@return Event handler {Array}
+			 */
+			subscribe = function (topic, callback) {
+				if (!cache[topic]) {
+					cache[topic] = [];
+				}
+				cache[topic].push(callback);
+				return [topic, callback];
+			},
+			/**
+			 *	Events.unsubscribe
+			 *	e.g.: var handle = Events.subscribe("/Article/added", Articles.validate);
+			 *		Events.unsubscribe(handle);
+			 *
+			 *	@class Events
+			 *	@method unsubscribe
+			 *	@param handle {Array}
+			 *	@param completly {Boolean}
+			 *	@return {type description }
+			 */
+			unsubscribe = function (handle, completly) {
+				var t = handle[0],
+					i = cache[t].length - 1;
 
-	Loosely based on Dojo publish/subscribe API, limited in scope. Rewritten blindly.
+				if (cache[t]) {
+					for (i; i >= 0; i -= 1) {
+						if (cache[t][i] === handle[1]) {
+							cache[t].splice(cache[t][i], 1);
+							if(completly){ delete cache[t]; }
+						}
+					}
+				}
+			};
 
-	Original is (c) Dojo Foundation 2004-2010. Released under either AFL or new BSD, see:
-	http://dojofoundation.org/license for more information.
-
-*/	
-
-;(function(d){
-
-	// the topic/subscription hash
-	var cache = {};
-
-	d.publish = function(/* String */topic, /* Array? */args){
-		// summary: 
-		//		Publish some data on a named topic.
-		// topic: String
-		//		The channel to publish on
-		// args: Array?
-		//		The data to publish. Each array item is converted into an ordered
-		//		arguments on the subscribed functions. 
-		//
-		// example:
-		//		Publish stuff on '/some/topic'. Anything subscribed will be called
-		//		with a function signature like: function(a,b,c){ ... }
-		//
-		//	|		$.publish("/some/topic", ["a","b","c"]);
-		cache[topic] && d.each(cache[topic], function(){
-			this.apply(d, args || []);
-		});
-	};
-
-	d.subscribe = function(/* String */topic, /* Function */callback){
-		// summary:
-		//		Register a callback on a named topic.
-		// topic: String
-		//		The channel to subscribe to
-		// callback: Function
-		//		The handler event. Anytime something is $.publish'ed on a 
-		//		subscribed channel, the callback will be called with the
-		//		published array as ordered arguments.
-		//
-		// returns: Array
-		//		A handle which can be used to unsubscribe this particular subscription.
-		//	
-		// example:
-		//	|	$.subscribe("/some/topic", function(a, b, c){ /* handle data */ });
-		//
-		if(!cache[topic]){
-			cache[topic] = [];
-		}
-		cache[topic].push(callback);
-		return [topic, callback]; // Array
-	};
-
-	d.unsubscribe = function(/* Array */handle){
-		// summary:
-		//		Disconnect a subscribed function for a topic.
-		// handle: Array
-		//		The return value from a $.subscribe call.
-		// example:
-		//	|	var handle = $.subscribe("/something", function(){});
-		//	|	$.unsubscribe(handle);
-		
-		var t = handle[0];
-		cache[t] && d.each(cache[t], function(idx){
-			if(this == handle[1]){
-				cache[t].splice(idx, 1);
-			}
-		});
-	};
-
-})(jQuery);
-
+		return {
+			publish: publish,
+			subscribe: subscribe,
+			unsubscribe: unsubscribe
+		};
+}());
